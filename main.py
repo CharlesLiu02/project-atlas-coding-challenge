@@ -24,7 +24,8 @@ class AtlasAnnotationTool(QWidget):
         self.message = "> Program Started, UI Loaded"
         self.selected_points_id = []
         self.largest_seg_id = -1
-        self.segmentations = [] # list of segmentations of type Segmentation
+        self.segmentations = []  # list of segmentations of type Segmentation
+        self.selected_points_original_color = []
 
         self.current_data_file_name = None
         self.current_result_point_indices = []
@@ -57,48 +58,62 @@ class AtlasAnnotationTool(QWidget):
 
     ####### SET UP FUNCTIONS #######
     def setOnClickListener(self):
-        self.btn_floodfill_done.clicked.connect(self.btn_floodfill_done_clicked)
-        self.btn_floodfill_cancel.clicked.connect(self.btn_floodfill_cancel_clicked)
-        self.upperScene.canvas.events.mouse_release.connect(self.topCanvasClicked)
+        self.btn_floodfill_done.clicked.connect(
+            self.btn_floodfill_done_clicked)
+        self.btn_floodfill_cancel.clicked.connect(
+            self.btn_floodfill_cancel_clicked)
+        self.upperScene.canvas.events.mouse_release.connect(
+            self.topCanvasClicked)
         self.btn_common_load.clicked.connect(self.btn_common_load_clicked)
         self.btn_common_save.clicked.connect(self.btn_save_clicked)
         self.btn_common_delete.clicked.connect(self.btn_delete_clicked)
-        self.segmentation_list.itemDoubleClicked.connect(self.segmentation_list_item_double_clicked)
+        self.segmentation_list.itemDoubleClicked.connect(
+            self.segmentation_list_item_double_clicked)
         self.btn_function_done.clicked.connect(self.btn_floodfill_done_clicked)
-        self.btn_function_cancel.clicked.connect(self.btn_floodfill_cancel_clicked)
-
+        self.btn_function_cancel.clicked.connect(
+            self.btn_floodfill_cancel_clicked)
 
     def wireWidgets(self):
         # scene wiring
-        self.base_form.data_display_window.addWidget(self.upperScene.canvas.native)
-        self.base_form.data_display_window.addWidget(self.lowerScene.canvas.native)
+        self.base_form.data_display_window.addWidget(
+            self.upperScene.canvas.native)
+        self.base_form.data_display_window.addWidget(
+            self.lowerScene.canvas.native)
 
         # message box wiring
-        self.message_center = self.base_form.message_center_layout.itemAt(0).widget()
+        self.message_center = self.base_form.message_center_layout.itemAt(
+            0).widget()
 
         # segmentation list wiring
-        self.segmentation_list = self.base_form.segmentation_layout.itemAt(0).widget()
+        self.segmentation_list = self.base_form.segmentation_layout.itemAt(
+            0).widget()
         # scene button wiring
-        self.btn_common_save = self.base_form.common_buttons_layout.itemAt(0).widget()
-        self.btn_common_load = self.base_form.common_buttons_layout.itemAt(1).widget()
-        self.btn_common_delete = self.base_form.common_buttons_layout.itemAt(2).widget()
+        self.btn_common_save = self.base_form.common_buttons_layout.itemAt(
+            0).widget()
+        self.btn_common_load = self.base_form.common_buttons_layout.itemAt(
+            1).widget()
+        self.btn_common_delete = self.base_form.common_buttons_layout.itemAt(
+            2).widget()
 
         # Floodfill wiring
         tab_floodfill = self.base_form.system_mode_layout.itemAt(0).widget()
         self.btn_floodfill_done = tab_floodfill.widget(0).children()[1]
         self.btn_floodfill_cancel = tab_floodfill.widget(0).children()[2]
 
-        #Your Function wiring
-        self.btn_function_done = self.window.findChild(QPushButton, "btn_function_done")
-        self.btn_function_cancel = self.window.findChild(QPushButton, "btn_function_cancel")
+        # Your Function wiring
+        self.btn_function_done = self.window.findChild(
+            QPushButton, "btn_function_done")
+        self.btn_function_cancel = self.window.findChild(
+            QPushButton, "btn_function_cancel")
         self.line_edit_x_coord = self.window.findChild(QLineEdit, "x_coord")
         self.line_edit_y_coord = self.window.findChild(QLineEdit, "y_coord")
         self.line_edit_z_coord = self.window.findChild(QLineEdit, "z_coord")
 
-
     def setUpDisplay(self):
-        self.upperScene.canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
-        self.lowerScene.canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
+        self.upperScene.canvas = vispy.scene.SceneCanvas(
+            keys='interactive', show=True)
+        self.lowerScene.canvas = vispy.scene.SceneCanvas(
+            keys='interactive', show=True)
 
     ####### ON CLICK FUNCTIONS #######
     def segmentation_list_item_double_clicked(self):
@@ -113,10 +128,12 @@ class AtlasAnnotationTool(QWidget):
             fname = str(current_segmentation.data_file_name)
 
             pcd = o3d.io.read_point_cloud(fname)
+
             class DataPCDIsEmptyException(Exception):
                 pass
             if pcd.is_empty():
-                raise DataPCDIsEmptyException("ERR: Data file at {} is cannot be found or is empty".format(fname))
+                raise DataPCDIsEmptyException(
+                    "ERR: Data file at {} is cannot be found or is empty".format(fname))
 
             color = np.asarray(pcd.colors)
             for i in index_to_highlight:
@@ -125,8 +142,8 @@ class AtlasAnnotationTool(QWidget):
 
             self.upperScene.render(pcd)
         except ValueError as e:
-            self.writeMessage("ERR: Index is not an int --> {}".format(current_item_text.split(" | ")[0]))
-
+            self.writeMessage(
+                "ERR: Index is not an int --> {}".format(current_item_text.split(" | ")[0]))
 
     def btn_common_load_clicked(self):
         '''
@@ -147,7 +164,8 @@ class AtlasAnnotationTool(QWidget):
         3. render the result in the lower scene
         '''
         try:
-            surface_to_crop = floodfill(self.selected_points_id, self.upperScene.pcd)
+            surface_to_crop = floodfill(
+                self.selected_points_id, self.upperScene.pcd)
             self.current_result_point_indices = surface_to_crop
             new_pcd = crop_reserve(self.upperScene.pcd, surface_to_crop)
             self.lowerScene.render(new_pcd)
@@ -156,6 +174,13 @@ class AtlasAnnotationTool(QWidget):
             self.writeMessage(str(e))
         self.writeMessage("Selected Points is cleared")
         self.selected_points_id = []
+        self.selected_points_original_color
+        self.refillColor()
+
+    def refillColor(self):
+        for point in self.selected_points_original_color:
+            self.upperScene.pcd.colors[point[0]] = point[1]
+        self.selected_points_original_color = []
 
     def btn_floodfill_cancel_clicked(self):
         '''
@@ -163,9 +188,11 @@ class AtlasAnnotationTool(QWidget):
         1. clear all selected points
         2. clear the lower scene
         '''
-        self.writeMessage("Selected Segmentation Cancelled".format(len(self.selected_points_id)))
+        self.writeMessage("Selected Segmentation Cancelled".format(
+            len(self.selected_points_id)))
         self.selected_points_id = []
         self.current_result_point_indices = []
+        self.refillColor()
         self.lowerScene.clear()
 
     def btn_delete_clicked(self):
@@ -234,11 +261,13 @@ class AtlasAnnotationTool(QWidget):
         ids = np.divide(ids, 255, dtype=np.float32)
         # connect events
         if event.button == 1 and self.distance_traveled(event.trail()) <= 2:
-            pos = self.upperScene.canvas.transforms.canvas_transform.map(event.pos)
+            pos = self.upperScene.canvas.transforms.canvas_transform.map(
+                event.pos)
             try:
                 self.upperScene.marker.update_gl_state(blend=False)
                 self.upperScene.marker.antialias = 0
-                self.upperScene.marker.set_data(points, edge_color=ids, face_color=ids, size=self.point_size)
+                self.upperScene.marker.set_data(
+                    points, edge_color=ids, face_color=ids, size=self.point_size)
                 img = self.upperScene.canvas.render((pos[0] - 2,
                                                      pos[1] - 2,
                                                      2 * 10 + 1,
@@ -246,10 +275,15 @@ class AtlasAnnotationTool(QWidget):
                                                     bgcolor=vispy.color.ColorArray('red'))
                 self.upperScene.canvas.update()
                 # TODO make the dots appear
+                idxs = img.ravel().view(np.uint32)
+                idx = idxs[len(idxs) // 2]
+                self.selected_points_original_color.append((idx, colors[idx].copy()))
+                colors[idx] = [1.0, 0.1176470588235, 0.145098039]
             finally:
                 self.upperScene.marker.update_gl_state(blend=True)
                 self.upperScene.marker.antialias = 1
-                self.upperScene.marker.set_data(points, edge_color=colors, face_color=colors, size=self.point_size)
+                self.upperScene.marker.set_data(
+                    points, edge_color=colors, face_color=colors, size=self.point_size)
             # We pick the pixel directly under the click, unless it is
             # zero, in which case we look for the most common nonzero
             # pixel value in a square region centered on the click.
@@ -264,11 +298,14 @@ class AtlasAnnotationTool(QWidget):
             if idx > 0:
                 try:
                     points[idx]
-                    self.selected_points_id.append(idx)  # TODO how to you not add a point if it is index out of range
+                    # TODO how to you not add a point if it is index out of range
+                    self.selected_points_id.append(idx)
                     # p1.set_data(points, edge_color=colors, face_color=colors, size=2)
-                    self.writeMessage("Selected Points {}".format(self.selected_points_id))
+                    self.writeMessage("Selected Points {}".format(
+                        self.selected_points_id))
                 except IndexError:
-                    self.writeMessage("The point {} is not in the point cloud".format(idx))
+                    self.writeMessage(
+                        "The point {} is not in the point cloud".format(idx))
 
     ####### UTILITIES FUNCTIONS #######
 
@@ -291,14 +328,16 @@ class AtlasAnnotationTool(QWidget):
 
     def addSegmentationItem(self, segment):
         self.segmentations.append(segment)
-        self.segmentation_list.addItem("{} | {} | {}".format(segment.id, segment.segment_name, segment.type_class))
+        self.segmentation_list.addItem("{} | {} | {}".format(
+            segment.id, segment.segment_name, segment.type_class))
 
     def writeMessage(self, message):
         '''
         Iteratively populate message
         :param message: new message given
         '''
-        self.message = "{} \n> {}".format(self.message, message)  # format the text so that it is one per line
+        self.message = "{} \n> {}".format(
+            self.message, message)  # format the text so that it is one per line
         self.message_center.setPlainText(self.message)  # no url displaying
         self.message_center.verticalScrollBar().setValue(
             self.message_center.verticalScrollBar().maximum())  # scroll bar to the bottom by default
@@ -317,6 +356,7 @@ class AtlasAnnotationTool(QWidget):
                 self.addSegmentationItem(seg)
         except FileNotFoundError as e:
             self.writeMessage("No segmentations detected")
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
