@@ -1,0 +1,8 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#143503",
+        "titleBar.activeBackground": "#1C4A05",
+        "titleBar.activeForeground": "#F2FEEC"
+    },
+    "python.pythonPath": "/Users/charlesliu/opt/miniconda3/envs/env_name/bin/python"
+}

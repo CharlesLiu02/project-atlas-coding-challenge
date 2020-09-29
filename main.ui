@@ -90,6 +90,48 @@
         <attribute name="title">
          <string>Your Function</string>
         </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+            <layout class="QHBoxLayout" name="horizontal_layout">
+                <item>
+                    <widget class="QLineEdit" name="x_coord">
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QLineEdit" name="y_coord">
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QLineEdit" name="z_coord">
+                    </widget>
+                </item>
+            </layout>
+           </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QPushButton" name="btn_function_done">
+             <property name="text">
+              <string>Done</string>
+             </property>
+             <property name="autoDefault">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_function_cancel">
+             <property name="text">
+              <string>Cancel</string>
+             </property>
+             <property name="autoDefault">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </widget>
       </widget>
      </item>

@@ -64,6 +64,8 @@ class AtlasAnnotationTool(QWidget):
         self.btn_common_save.clicked.connect(self.btn_save_clicked)
         self.btn_common_delete.clicked.connect(self.btn_delete_clicked)
         self.segmentation_list.itemDoubleClicked.connect(self.segmentation_list_item_double_clicked)
+        self.btn_function_done.clicked.connect(self.btn_floodfill_done_clicked)
+        self.btn_function_cancel.clicked.connect(self.btn_floodfill_cancel_clicked)
 
 
     def wireWidgets(self):
@@ -85,6 +87,13 @@ class AtlasAnnotationTool(QWidget):
         tab_floodfill = self.base_form.system_mode_layout.itemAt(0).widget()
         self.btn_floodfill_done = tab_floodfill.widget(0).children()[1]
         self.btn_floodfill_cancel = tab_floodfill.widget(0).children()[2]
+
+        #Your Function wiring
+        self.btn_function_done = self.window.findChild(QPushButton, "btn_function_done")
+        self.btn_function_cancel = self.window.findChild(QPushButton, "btn_function_cancel")
+        self.line_edit_x_coord = self.window.findChild(QLineEdit, "x_coord")
+        self.line_edit_y_coord = self.window.findChild(QLineEdit, "y_coord")
+        self.line_edit_z_coord = self.window.findChild(QLineEdit, "z_coord")
 
 
     def setUpDisplay(self):
