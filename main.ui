@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1377</width>
-    <height>813</height>
+    <width>1440</width>
+    <height>791</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -91,22 +91,40 @@
          <string>Your Function</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-            <layout class="QHBoxLayout" name="horizontal_layout">
-                <item>
-                    <widget class="QLineEdit" name="x_coord">
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QLineEdit" name="y_coord">
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QLineEdit" name="z_coord">
-                    </widget>
-                </item>
-            </layout>
+         <item>
+          <layout class="QHBoxLayout" name="horizontal_layout">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>X Coordinate:</string>
+             </property>
+            </widget>
            </item>
+           <item>
+            <widget class="QLineEdit" name="x_coord"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Y Coordinate:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="y_coord"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Z Coordinate:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="z_coord"/>
+           </item>
+          </layout>
+         </item>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>

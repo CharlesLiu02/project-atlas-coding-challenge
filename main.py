@@ -42,6 +42,13 @@ class AtlasAnnotationTool(QWidget):
         # scene variable -- floodfill specific buttons
         self.btn_floodfill_done = None
         self.btn_floodfill_cancel = None
+        
+        #your function variables
+        self.btn_function_cancel = None
+        self.btn_function_done = None
+        self.line_edit_x_coord = None
+        self.line_edit_y_coord = None
+        self.line_edit_z_coord = None
 
         # setup
         self.setUpDisplay()
@@ -163,6 +170,17 @@ class AtlasAnnotationTool(QWidget):
         2. get the surface that needs to be cropped
         3. render the result in the lower scene
         '''
+        x_coord = self.line_edit_x_coord.text()
+        y_coord = self.line_edit_y_coord.text()
+        z_coord = self.line_edit_z_coord.text()
+        if not self.selected_points_id:
+            if x_coord:
+                self.selected_points_id.append(x_coord)
+            if y_coord:
+                self.selected_points_id.append(y_coord)
+            if z_coord:
+                self.selected_points_id.append(z_coord)
+
         try:
             surface_to_crop = floodfill(
                 self.selected_points_id, self.upperScene.pcd)
