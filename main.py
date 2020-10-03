@@ -35,6 +35,7 @@ class AtlasAnnotationTool(QWidget):
         self.lowerScene = Scene()
         self.message_center = None
         self.segmentation_list = None
+        self.current_item_id = None
         self.btn_common_save = None
         self.btn_common_load = None
         self.btn_common_delete = None
@@ -42,8 +43,8 @@ class AtlasAnnotationTool(QWidget):
         # scene variable -- floodfill specific buttons
         self.btn_floodfill_done = None
         self.btn_floodfill_cancel = None
-        
-        #your function variables
+
+        # your function variables
         self.btn_function_cancel = None
         self.btn_function_done = None
         self.line_edit_x_coord = None
@@ -76,6 +77,8 @@ class AtlasAnnotationTool(QWidget):
         self.btn_common_delete.clicked.connect(self.btn_delete_clicked)
         self.segmentation_list.itemDoubleClicked.connect(
             self.segmentation_list_item_double_clicked)
+        self.segmentation_list.itemClicked.connect(
+            self.segmentation_list_item_clicked)
         self.btn_function_done.clicked.connect(self.btn_floodfill_done_clicked)
         self.btn_function_cancel.clicked.connect(
             self.btn_floodfill_cancel_clicked)
@@ -123,14 +126,18 @@ class AtlasAnnotationTool(QWidget):
             keys='interactive', show=True)
 
     ####### ON CLICK FUNCTIONS #######
+    def segmentation_list_item_clicked(self):
+        current_item_text = self.segmentation_list.currentItem().text()
+        self.current_item_id = int(current_item_text.split(" | ")[0])
+
     def segmentation_list_item_double_clicked(self):
         '''
         When an item is double clicked, read that file and render it onto the upper scene
         '''
         current_item_text = self.segmentation_list.currentItem().text()
         try:
-            current_item_index = int(current_item_text.split(" | ")[0])
-            current_segmentation = self.segmentations[current_item_index]
+            current_item_id = int(current_item_text.split(" | ")[0])
+            current_segmentation = self.segmentations[current_item_id]
             index_to_highlight = current_segmentation.indices
             fname = str(current_segmentation.data_file_name)
 
@@ -214,7 +221,29 @@ class AtlasAnnotationTool(QWidget):
         self.lowerScene.clear()
 
     def btn_delete_clicked(self):
-        print("NOT IMPLEMENTED YET")
+        try:
+            import json
+            obj = json.load(open(self.data_fname))
+
+            # Iterate through the objects in the JSON and pop (remove)
+            # the obj once we find it.
+            for i in range(len(obj)):
+                if str(obj[i][7:8]) == str(self.current_item_id):
+                    self.segmentations.pop(i)
+                    self.segmentation_list.takeItem(i)
+                    obj.pop(i)
+                    break
+
+            # Output the updated file with pretty JSON
+            open("segments.json", "w").write(
+                json.dumps(obj, sort_keys=True, indent=2)
+            )
+            self.writeMessage("Deleted Successfully!")
+        except ValueError as e:
+            self.writeMessage(
+                "ERR: Index is not an int --> {}".format(self.current_item_id))
+        except TypeError as e:
+            print("No scene loaded")
 
     def btn_save_clicked(self):
         '''
@@ -295,7 +324,8 @@ class AtlasAnnotationTool(QWidget):
                 # TODO make the dots appear
                 idxs = img.ravel().view(np.uint32)
                 idx = idxs[len(idxs) // 2]
-                self.selected_points_original_color.append((idx, colors[idx].copy()))
+                self.selected_points_original_color.append(
+                    (idx, colors[idx].copy()))
                 colors[idx] = [1.0, 0.1176470588235, 0.145098039]
             finally:
                 self.upperScene.marker.update_gl_state(blend=True)
